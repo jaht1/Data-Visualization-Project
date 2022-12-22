@@ -1,14 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="main.js"></script>
-    <title>Document</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--- <script src="main.js"></script> -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <title>Global terrorism</title>
+  </head>
+  <body>
+    <script>
+      //Färg
+      var main_col = "#ff0066";
+      var title_col = "#bd1349";
+      var subtitle_col = "#ffffff";
+      var white_col = "#ffffff";
+      var light_col = "#fc68ab";
+      var moderate_col = "#ff0066";
+      var dark_col = "#af0259";
+      var border_col = "#9e1345";
+      var back_col = "#010c16";
+      var black_col = "#210612";
+      var country_over_col = "#2d0b1f";
+      var tooltip_col = "#e0e0e0";
+      var blue_col = "#4242ff";
+      var button_over_col = "#010c16";
+      var country_over_col = "#2d0b1f";
 
-</head>
-<body>
-    
-</body>
+      // Main settings
+
+      //Bakgrund
+      d3.select("body")
+        .style("background", back_col)
+        .style("font-family", "Verdana, Geneva, sans-serif")
+        .attr("height", "700px");
+
+      //Margin
+      var margin = { top: 65, right: 50, bottom: 20, left: 50 },
+        width = 1200 - margin.left - margin.right,
+        height = 740 - margin.top - margin.bottom;
+
+      //svg div
+      //Vita framen
+      var div_main = d3
+        .select("body")
+        .append("div")
+        .attr("id", "div_main")
+        .style("border", "10px solid white")
+        .style("margin", "50px auto");
+
+      //svg board
+      var svg = div_main
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("display", "block")
+        .style("margin", "0px auto")
+        .style("border", "2px solid grey")
+        .style("background", back_col)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Title & Subtitle TODO
+      /*
+
+
+
+
+        */
+
+      //Datum
+      var parseTime = d3.timeParse("%e-%b-%Y");
+      console.log(parseTime("9-Feb-1917"));
+
+      var formatTime = d3.timeFormat("%e %b %y");
+      console.log(formatTime(new Date()));
+
+      //GEO-Data
+      const geoFile =
+        "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
+
+      const dataFile =
+        "https://raw.githubusercontent.com/jaht1/Data-Visualization-Project/19cfcd20f35cb9f13fd19a4230abc0884d20ac49/global_terrorism_dataset.csv?token=GHSAT0AAAAAAB4RLG7T2AKTSZWKKJJ55F36Y5EI5MA";
+
+
+        // Funkar inte
+      Promise.all([
+        d3.json(geoFile),
+        d3.csv(dataFile, function (row) {
+          return {
+            //+ = numeric variable
+            id: +row.eventid,
+            year: +row.iyear,
+            country: row.country,
+            // TODO: lägg till koordinaterna till CSV-filen. OBS! Sortera csv-filen enligt id före!
+
+          };
+        }),
+      ]).then(function ([shapes, data]) {
+        map.features = shapes.features;
+        dataset = data;
+
+        console.log(dataset);
+        console.log(map.features);
+        console.log(map.features[10].properties.name);
+      });
+    </script>
+  </body>
 </html>
