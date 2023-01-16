@@ -157,10 +157,13 @@
 
     //const dataFile = "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv"
       const dataFile = "https://raw.githubusercontent.com/jaht1/Data-Visualization-Project/main/results.csv";
-
+    const cityFile = "https://raw.githubusercontent.com/jaht1/Data-Visualization-Project/main/worldcities.csv"
       // store global objects here
       var map = {};
       var dataset = {};
+
+     // console.log(typeof cityFile)
+
 
       Promise.all([
         d3.json(geoFile),
@@ -174,7 +177,8 @@
             away_score: +row.away_score,
             tournament: row.tournament,
             city: row.city,
-            country: row.country
+            country: row.country,
+            //coord: cityFile.filter(function(d) { return d.city === row.city })[0].value
            // year: +column.iyear,
            // country: column.country_txt,
             /*serial: +death.serial,
@@ -298,8 +302,8 @@
           .enter()
           .append("circle")
           .attr("class", "main_circles")
-          .attr("cx", 5)
-          .attr("cy", 5)
+          .attr("cx", d => projection(d.coord)[0])
+           .attr("cy", d => projection(d.coord)[1])
           .attr("r", (d) => areaScale(1))
           .style("stroke", (d) => colorScale(1))
           .style("fill", (d) => colorScale(1))
@@ -314,8 +318,8 @@
           .enter()
           .append("circle")
           .attr("class", "contour_circles")
-          .attr("cx", 5)
-          .attr("cy", 5)
+          .attr("cx", d => projection(d.coord)[0])
+           .attr("cy", d => projection(d.coord)[1])
           .attr("r", (d) => areaScale(1) + circleScale(5))
           .style("stroke", white_col)
           .style("fill", white_col)
