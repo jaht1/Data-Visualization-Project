@@ -164,11 +164,11 @@
 
       Promise.all([
         d3.json(geoFile),
-        d3.csv(dataFile, function (row) {
+        d3.csv(dataFile, function (column) {
           return {
-            id: +row.eventid,
-            year: +row.iyear,
-            country: row.country,
+            id: +column.eventid,
+            year: +column.iyear,
+            country: column.country_txt,
             /*serial: +death.serial,
 				region: death.collapsed_region,
 				cause: death.cause_of_death,
