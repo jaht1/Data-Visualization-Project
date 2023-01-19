@@ -175,6 +175,7 @@
             //Main numeric value
             missing: +row.total_death_missing,
             cause: row.cause_of_death,
+            random: row.random,
             lat: +row.lat,
             lon: +row.lon,
             cord: [+row.lon, +row.lat],
@@ -370,7 +371,7 @@
           .append("circle")
           .classed("time_circles", true)
           .attr("cx", (d) => timeScale(d.date))
-          .attr("cy", (d) => 570 + d.year_avg * 80)
+          .attr("cy", (d) => 570 + d.random * 90)
           .attr("r", (d) => areaScale(d.missing))
           //.style("stroke", white_col)
           .attr("stroke-width", 0.4)
@@ -393,7 +394,7 @@
           .append("line")
           .classed("time_lines", true)
           .attr("x1", (d) => timeScale(d.date))
-          .attr("y1", (d) => 570 + d.year_avg * 80) //610
+          .attr("y1", (d) => 570 + d.random * 80) //610
           .attr("x2", function (d) { return projection(d.cord)[0]; })
           .attr("y2", function (d) { return projection(d.cord)[1]; })
           .style("stroke", (d) => projColorScale(d.missing))
@@ -477,7 +478,7 @@
           d3.selectAll("circle.time_circles")
             .attr("r", (d) => Math.random())
             .attr("cx", (d) => timeScale(d.date))
-            .attr("cy", (d) => 570 + d.year_avg * 80)
+            .attr("cy", (d) => 570 + d.random * 80)
             .attr("stroke-width", 1)
             .style("stroke-opacity", 0)
             .style("fill-opacity", 0)
@@ -487,7 +488,7 @@
                 .duration(3000)
                 .delay(i * in_delay)
                 .attr("cx", (d) => timeScale(d.date))
-                .attr("cy", (d) => 570 + d.year_avg * 80)
+                .attr("cy", (d) => 570 + d.random * 80)
                 .attr("r", (d) => areaScale(d.missing))
                 .attr("stroke-width", 0.4)
                 .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
