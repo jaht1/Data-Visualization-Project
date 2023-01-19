@@ -10,21 +10,29 @@
     <script>
       // -------------------------------------- color variables
 
-      var main_col = "#ff0066";
-      var title_col = "#bd1349";
-      var subtitle_col = "#ffffff";
-      var white_col = "#ffffff";
-      var light_col = "#fc68ab";
-      var moderate_col = "#ff0066";
-      var dark_col = "#af0259";
-      var border_col = "#9e1345";
-      var back_col = "#010c16";
-      var black_col = "#210612";
-      var region_over_col = "#2d0b1f";
-      var tooltip_col = "#e0e0e0";
-      var blue_col = "#4242ff";
-      var button_over_col = "#010c16";
-      var region_over_col = "#2d0b1f";
+  var main_col = "#4d4dff";
+  var title_col = "#2a2a9f";
+  var subtitle_col = "#ffffff";
+  var white_col = "#ffffff";
+  var light_col = "#9f9fff";
+  var moderate_col = "#4d4dff";
+  var dark_col = "#e6e6e6";
+  var border_col = "#f2f2f2";
+
+ // Background color
+  var back_col = "#ffffff";
+
+  //country colors
+  var country_col = "#333333";
+  var region_over_col = "#e6e6e6";
+
+
+  var tooltip_col = "#fff";
+  var blue_col = "#0000ff";
+
+  //Hover
+  var button_over_col = "#f9f9f9";
+  var region_over_col = "#4d4d4d";
 
       var regions_en = [
         "Mediterranean",
@@ -282,7 +290,7 @@
           .append("path")
           .attr("class", "region")
           .attr("d", geoPath)
-          .style("fill", black_col)
+          .style("fill", country_col)
           //.style("fill-opacity", "0")
           .style("stroke", border_col)
           .style("stroke-width", "0.4");
@@ -2512,7 +2520,7 @@
             .style("opacity", 0);
 
           d3.select(this)
-            .style("fill", black_col)
+            .style("fill", country_col)
             .style("fill-opacity", 0.4)
             .style("stroke-opacity", 0.8)
             .style("stroke", border_col);
