@@ -174,10 +174,12 @@
             //Main numeric value
             missing: +row.total_death_missing,
             cause: row.cause_of_death,
-            lat: row.lat,
-            lon: row.lon,
+            lat: +row.lat,
+            lon: +row.lon,
+            cord: [+row.lon, +row.lat],
             //Second numeric variable
             year_avg: +row.year_incidents
+            
           };
           
         }),
@@ -220,10 +222,10 @@
         .domain([0, 800])
         .range([moderate_col, light_col]);
 
-      // Opacity Scale
+      // opacity Scale
       var opacityScale = d3.scaleLinear().domain([0, 600]).range([0.5, 0.9]); // when using colors the scale has to start at 0.4
 
-      // Projections Opacity Scale
+      // Projections opacity Scale
       var projOpacScale = d3.scaleLinear().domain([0, 1000]).range([0.1, 0.9]); // when using colors the scale has to start at 0.4
 
       // Projection Color Scale
@@ -391,14 +393,10 @@
           .classed("time_lines", true)
           .attr("x1", (d) => timeScale(d.date))
           .attr("y1", (d) => 570 + d.year_avg * 80) //610
-          .attr("x2", function (d) {
-            return projection(1)[0];
-          })
-          .attr("y2", function (d) {
-            return projection(1)[1];
-          })
-          .style("stroke", (d) => projColorScale(1))
-          .style("stroke-opacity", (d) => projOpacScale(1))
+          .attr("x2", function (d) { return projection(d.cord)[0]; })
+          .attr("y2", function (d) { return projection(d.cord)[1]; })
+          .style("stroke", (d) => projColorScale(d.missing))
+          .style("stroke-opacity", (d) => projOpacScale(d.missing))
           .style("stroke-width", proj_stroke);
 
         // -------------------------------------- play function
@@ -2427,7 +2425,7 @@
               "<b>" +
                 1 +
                 " </b> Dead or Missing <br/><span>-----------------------------</span></br> " +
-                d.city +
+                d.missing +
                 "</br>" +
                 formatTime(d.date)
             )
@@ -2522,7 +2520,7 @@
           .on("mouseleave", region_mouseleave);
 
         // logo
-        var myimage = controller
+       /* var myimage = controller
           .append("a")
           .attr("href", "http://alhadaqa.com/")
           .append("image")
@@ -2535,7 +2533,7 @@
           .style("opacity", 1)
           .attr("transform", "translate(30,335)");
 
-          
+          */
       } // --------------- end of draw function
       
     </script>
