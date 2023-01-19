@@ -135,7 +135,7 @@
       // Sub-Title
       svg
         .append("text")
-        .text("International football results")
+        .text("Immigrant deaths")
         .attr("x", -20)
         .attr("y", 0)
         .style("fill", main_col)
@@ -168,7 +168,8 @@
         d3.csv(dataFile, function (row) {
         
           return {
-            date: row.date,
+            serial: +row.serial,
+            date: parseTime(row.date),
             region: row.region,
             year: row.year,
             //Main numeric value
@@ -293,14 +294,14 @@
           .enter()
           .append("circle")
           .attr("class", "main_circles")
-          .attr("cx", d => projection(d.lon))
-           .attr("cy", d => projection(d.lat))
-          .attr("r", (d) => areaScale(1))
-          .style("stroke", (d) => colorScale(1))
-          .style("fill", (d) => colorScale(1))
+          .attr("cx", d => projection(d.cord)[0])
+        .attr("cy", d => projection(d.cord)[1])
+          .attr("r", (d) => areaScale(d.missing))
+          .style("stroke", (d) => colorScale(d.missing))
+          .style("fill", (d) => colorScale(d.missing))
           .attr("stroke-width", 0.4)
-          .style("stroke-opacity", (d) => opacityScale(1) + 0.1)
-          .style("fill-opacity", (d) => opacityScale(1) + 0.2);
+          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
+          .style("fill-opacity", (d) => opacityScale(d.missing) + 0.2);
 
         // contour circles
         svg
@@ -309,9 +310,9 @@
           .enter()
           .append("circle")
           .attr("class", "contour_circles")
-          .attr("cx", d => projection(d.lon))
-           .attr("cy", d => projection(d.lat))
-          .attr("r", (d) => areaScale(1) + circleScale(5))
+          .attr("cx", d => projection(d.cord)[0])
+          .attr("cy", d => projection(d.cord)[1])
+          .attr("r", (d) => areaScale(d.missing) + circleScale(5))
           .style("stroke", white_col)
           .style("fill", white_col)
           .style("stroke-opacity", 0.085)
@@ -370,14 +371,14 @@
           .classed("time_circles", true)
           .attr("cx", (d) => timeScale(d.date))
           .attr("cy", (d) => 570 + d.year_avg * 80)
-          .attr("r", (d) => areaScale(1))
+          .attr("r", (d) => areaScale(d.missing))
           //.style("stroke", white_col)
           .attr("stroke-width", 0.4)
-          .style("stroke-opacity", (d) => opacityScale(1) + 0.1)
+          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
           //.style("fill", white_col)
-          .style("fill-opacity", (d) => opacityScale(1))
-          .style("fill", (d) => colorScale(1))
-          .style("stroke", (d) => colorScale(1));
+          .style("fill-opacity", (d) => opacityScale(d.missing))
+          .style("fill", (d) => colorScale(d.missing))
+          .style("stroke", (d) => colorScale(d.missing));
 
         // -------------------------------------- projections on timeline
 
@@ -430,7 +431,7 @@
           // play projection lines
           d3.selectAll("line.time_lines")
             .style("stroke-width", "0px")
-            .style("stroke-opacity", (d) => projOpacScale(1))
+            .style("stroke-opacity", (d) => projOpacScale(d.missing))
             .each(function (d, i) {
               d3.select(this)
                 .transition()
@@ -447,7 +448,7 @@
                 .transition()
                 .duration(main_dots_time)
                 .delay(i * in_delay)
-                .attr("r", (d) => areaScale(1));
+                .attr("r", (d) => areaScale(d.missing));
             });
 
           // play countour circles
@@ -462,11 +463,11 @@
                 .attr("stroke-width", 0.8)
                 .style("stroke-opacity", 0.9)
                 .style("fill-opacity", 0.7)
-                .attr("r", (d) => areaScale(1) + circleScale(0))
+                .attr("r", (d) => areaScale(d.missing) + circleScale(0))
                 .transition()
                 .duration(contour_dots_time2)
                 .delay(contour_dots_delay)
-                .attr("r", (d) => areaScale(1) + circleScale(5))
+                .attr("r", (d) => areaScale(d.missing) + circleScale(5))
                 .style("stroke-opacity", 0.085)
                 .attr("stroke-width", 0.2)
                 .style("fill-opacity", 0);
@@ -487,10 +488,10 @@
                 .delay(i * in_delay)
                 .attr("cx", (d) => timeScale(d.date))
                 .attr("cy", (d) => 570 + d.year_avg * 80)
-                .attr("r", (d) => areaScale(1))
+                .attr("r", (d) => areaScale(d.missing))
                 .attr("stroke-width", 0.4)
-                .style("stroke-opacity", (d) => opacityScale(1) + 0.1)
-                .style("fill-opacity", (d) => opacityScale(1));
+                .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
+                .style("fill-opacity", (d) => opacityScale(d.missing));
             });
         };
 
@@ -679,7 +680,7 @@
 
           d3.selectAll("line.time_lines")
             .style("stroke-width", proj_stroke)
-            .style("stroke-opacity", (d) => projOpacScale(1));
+            .style("stroke-opacity", (d) => projOpacScale(d.missing));
 
           p2 = p2_2;
 
@@ -808,12 +809,12 @@
           causeLegend.transition().duration(1000).style("opacity", 0);
 
           d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => colorScale(1))
-            .style("fill", (d) => colorScale(1));
+            .style("stroke", (d) => colorScale(d.missing))
+            .style("fill", (d) => colorScale(d.missing));
 
           d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => colorScale(1))
-            .style("fill", (d) => colorScale(1));
+            .style("stroke", (d) => colorScale(d.missing))
+            .style("fill", (d) => colorScale(d.missing));
 
           p3 = p3_2;
 
@@ -824,7 +825,7 @@
           joinLines2.transition().duration(200).style("opacity", 0);
 
           d3.selectAll("line.time_lines").style("stroke", (d) =>
-            projColorScale(1)
+            projColorScale(d.missing)
           );
 
           invert.transition().duration(1000).style("opacity", 0);
@@ -881,9 +882,9 @@
 
           d3.selectAll("line.time_lines").style("stroke", (d) =>
             regionScale(d.region)
-          );
-          //.style("stroke", d => causeScale(d.region))
-          //.style("stroke", d => colorScale(1))
+          )
+          .style("stroke", d => causeScale(d.region))
+          .style("stroke", d => colorScale(d.missing))
 
           regionLegend.raise();
 
@@ -940,9 +941,9 @@
           joinLines2.transition().duration(500).attr("points", array2);
 
           d3.selectAll("line.time_lines")
-            //.style("stroke", d => regionScale(d.region))
-            .style("stroke", (d) => causeScale(d.region));
-          //.style("stroke", d => colorScale(1))
+            .style("stroke", d => regionScale(d.region))
+            .style("stroke", (d) => causeScale(d.region))
+          .style("stroke", d => colorScale(d.missing))
 
           causeLegend.raise();
 
@@ -1682,7 +1683,7 @@
         joinLines2.style("opacity", 0);
 
         d3.selectAll("line.time_lines")
-          .style("stroke", (d) => projColorScale(1))
+          .style("stroke", (d) => projColorScale(d.missing))
           .style("stroke-width", "0.2px");
 
         invert.style("opacity", 0);
@@ -1695,6 +1696,8 @@
 
         var checked_1 = 1;
 
+
+        // FIX
         var regionFilter1 = function (d) {
           if (checked_1 == 1) {
             checked_1 = 0;
@@ -2038,7 +2041,7 @@
         // ---------- cause filter 1
 
         var checked_11 = 1;
-
+ // FIX
         var causeFilter1 = function (d) {
           if (checked_11 == 1) {
             checked_11 = 0;
@@ -2423,7 +2426,7 @@
           tooltip
             .html(
               "<b>" +
-                1 +
+                d.missing +
                 " </b> Dead or Missing <br/><span>-----------------------------</span></br> " +
                 d.missing +
                 "</br>" +
@@ -2519,21 +2522,6 @@
           .on("mousemove", region_mousemove)
           .on("mouseleave", region_mouseleave);
 
-        // logo
-       /* var myimage = controller
-          .append("a")
-          .attr("href", "http://alhadaqa.com/")
-          .append("image")
-          .attr(
-            "xlink:href",
-            "http://alhadaqa.com/wp-content/uploads/2019/08/alhadaqa_footer1.png"
-          )
-          .attr("width", 100)
-          .attr("height", 160)
-          .style("opacity", 1)
-          .attr("transform", "translate(30,335)");
-
-          */
       } // --------------- end of draw function
       
     </script>
