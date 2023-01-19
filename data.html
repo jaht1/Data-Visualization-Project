@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>International football results</title>
+    <title>Immigrant data</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <style></style>
   </head>
@@ -20,11 +20,11 @@
       var border_col = "#9e1345";
       var back_col = "#010c16";
       var black_col = "#210612";
-      var country_over_col = "#2d0b1f";
+      var region_over_col = "#2d0b1f";
       var tooltip_col = "#e0e0e0";
       var blue_col = "#4242ff";
       var button_over_col = "#010c16";
-      var country_over_col = "#2d0b1f";
+      var region_over_col = "#2d0b1f";
 
       var regions_en = [
         "Mediterranean",
@@ -156,13 +156,11 @@
       const geoFile =  "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
 
     //const dataFile = "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv"
-      const dataFile = "https://raw.githubusercontent.com/jaht1/Data-Visualization-Project/main/results.csv";
-    const cityFile = "https://raw.githubusercontent.com/jaht1/Data-Visualization-Project/main/worldcities.csv"
-      // store global objects here
+      const dataFile = "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv";
+ 
       var map = {};
       var dataset = {};
 
-     // console.log(typeof cityFile)
 
 
       Promise.all([
@@ -171,24 +169,15 @@
         
           return {
             date: row.date,
-            home_team: row.home_team,
-            away_team: row.away_team,
-            home_score: +row.home_score,
-            away_score: +row.away_score,
-            tournament: row.tournament,
-            city: row.city,
-            country: row.country,
-            //coord: cityFile.filter(function(d) { return d.city === row.city })[0].value
-           // year: +column.iyear,
-           // country: column.country_txt,
-            /*serial: +death.serial,
-				region: death.collapsed_region,
-				cause: death.cause_of_death,
-				collap_cause: death.collapsed_cause,
-				coord: [+death.lon, +death.lat],
-				death: +death.total_death_missing,
-				date: parseTime(death.date),
-				random: +death.random*/
+            region: row.region,
+            year: row.year,
+            //Main numeric value
+            missing: +row.total_death_missing,
+            cause: row.cause_of_death,
+            lat: row.lat,
+            lon: row.lon,
+            //Second numeric variable
+            year_avg: +row.year_incidents
           };
           
         }),
@@ -281,13 +270,13 @@
 
       // the draw function
       function draw() {
-        // country path
+        // region path
         svg
-          .selectAll("path.country")
+          .selectAll("path.region")
           .data(map.features)
           .enter()
           .append("path")
-          .attr("class", "country")
+          .attr("class", "region")
           .attr("d", geoPath)
           .style("fill", black_col)
           //.style("fill-opacity", "0")
@@ -302,15 +291,15 @@
           .enter()
           .append("circle")
           .attr("class", "main_circles")
-          .attr("cx", d => projection(d.coord)[0])
-           .attr("cy", d => projection(d.coord)[1])
+          .attr("cx", d => projection(d.lon))
+           .attr("cy", d => projection(d.lat))
           .attr("r", (d) => areaScale(1))
           .style("stroke", (d) => colorScale(1))
           .style("fill", (d) => colorScale(1))
           .attr("stroke-width", 0.4)
           .style("stroke-opacity", (d) => opacityScale(1) + 0.1)
           .style("fill-opacity", (d) => opacityScale(1) + 0.2);
-/*
+
         // contour circles
         svg
           .selectAll("circle.contour_circles")
@@ -318,8 +307,8 @@
           .enter()
           .append("circle")
           .attr("class", "contour_circles")
-          .attr("cx", d => projection(d.coord)[0])
-           .attr("cy", d => projection(d.coord)[1])
+          .attr("cx", d => projection(d.lon))
+           .attr("cy", d => projection(d.lat))
           .attr("r", (d) => areaScale(1) + circleScale(5))
           .style("stroke", white_col)
           .style("fill", white_col)
@@ -378,7 +367,7 @@
           .append("circle")
           .classed("time_circles", true)
           .attr("cx", (d) => timeScale(d.date))
-          .attr("cy", (d) => 570 + d.away_score * 80)
+          .attr("cy", (d) => 570 + d.year_avg * 80)
           .attr("r", (d) => areaScale(1))
           //.style("stroke", white_col)
           .attr("stroke-width", 0.4)
@@ -401,7 +390,7 @@
           .append("line")
           .classed("time_lines", true)
           .attr("x1", (d) => timeScale(d.date))
-          .attr("y1", (d) => 570 + d.away_score * 80) //610
+          .attr("y1", (d) => 570 + d.year_avg * 80) //610
           .attr("x2", function (d) {
             return projection(1)[0];
           })
@@ -489,7 +478,7 @@
           d3.selectAll("circle.time_circles")
             .attr("r", (d) => Math.random())
             .attr("cx", (d) => timeScale(d.date))
-            .attr("cy", (d) => 570 + d.away_score * 80)
+            .attr("cy", (d) => 570 + d.year_avg * 80)
             .attr("stroke-width", 1)
             .style("stroke-opacity", 0)
             .style("fill-opacity", 0)
@@ -499,7 +488,7 @@
                 .duration(3000)
                 .delay(i * in_delay)
                 .attr("cx", (d) => timeScale(d.date))
-                .attr("cy", (d) => 570 + d.away_score * 80)
+                .attr("cy", (d) => 570 + d.year_avg * 80)
                 .attr("r", (d) => areaScale(1))
                 .attr("stroke-width", 0.4)
                 .style("stroke-opacity", (d) => opacityScale(1) + 0.1)
@@ -746,12 +735,12 @@
             .style("stroke", moderate_col);
 
           d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => regionScale(d.country))
-            .style("fill", (d) => regionScale(d.country));
+            .style("stroke", (d) => regionScale(d.region))
+            .style("fill", (d) => regionScale(d.region));
 
           d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => regionScale(d.country))
-            .style("fill", (d) => regionScale(d.country));
+            .style("stroke", (d) => regionScale(d.region))
+            .style("fill", (d) => regionScale(d.region));
 
           p3 = p3_1;
 
@@ -771,7 +760,7 @@
             .style("opacity", 1);
 
           d3.selectAll("line.time_lines").style("stroke", (d) =>
-            regionScale(d.country)
+            regionScale(d.region)
           );
 
           regionLegend.raise();
@@ -879,12 +868,12 @@
             .style("opacity", 0);
 
           d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => regionScale(d.country))
-            .style("fill", (d) => regionScale(d.country));
+            .style("stroke", (d) => regionScale(d.region))
+            .style("fill", (d) => regionScale(d.region));
 
           d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => regionScale(d.country))
-            .style("fill", (d) => regionScale(d.country));
+            .style("stroke", (d) => regionScale(d.region))
+            .style("fill", (d) => regionScale(d.region));
 
           p4 = p4_1;
 
@@ -893,9 +882,9 @@
           joinLines2.transition().duration(500).attr("points", array2);
 
           d3.selectAll("line.time_lines").style("stroke", (d) =>
-            regionScale(d.country)
+            regionScale(d.region)
           );
-          //.style("stroke", d => causeScale(d.tournament))
+          //.style("stroke", d => causeScale(d.region))
           //.style("stroke", d => colorScale(1))
 
           regionLegend.raise();
@@ -939,12 +928,12 @@
             .style("opacity", 1);
 
           d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => causeScale(d.tournament))
-            .style("fill", (d) => causeScale(d.tournament));
+            .style("stroke", (d) => causeScale(d.region))
+            .style("fill", (d) => causeScale(d.region));
 
           d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => causeScale(d.tournament))
-            .style("fill", (d) => causeScale(d.tournament));
+            .style("stroke", (d) => causeScale(d.region))
+            .style("fill", (d) => causeScale(d.region));
 
           p4 = p4_2;
 
@@ -953,8 +942,8 @@
           joinLines2.transition().duration(500).attr("points", array2);
 
           d3.selectAll("line.time_lines")
-            //.style("stroke", d => regionScale(d.country))
-            .style("stroke", (d) => causeScale(d.tournament));
+            //.style("stroke", d => regionScale(d.region))
+            .style("stroke", (d) => causeScale(d.region));
           //.style("stroke", d => colorScale(1))
 
           causeLegend.raise();
@@ -1720,7 +1709,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[0])
+              .filter((d) => d.region == regions_en[0])
               .style("visibility", "hidden");
           } else {
             checked_1 = 1;
@@ -1733,7 +1722,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[0])
+              .filter((d) => d.region == regions_en[0])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 1
@@ -1754,7 +1743,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[1])
+              .filter((d) => d.region == regions_en[1])
               .style("visibility", "hidden");
           } else {
             checked_2 = 1;
@@ -1767,7 +1756,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[1])
+              .filter((d) => d.region == regions_en[1])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 2
@@ -1788,7 +1777,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[2])
+              .filter((d) => d.region == regions_en[2])
               .style("visibility", "hidden");
           } else {
             checked_3 = 1;
@@ -1801,7 +1790,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[2])
+              .filter((d) => d.region == regions_en[2])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 3
@@ -1822,7 +1811,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[3])
+              .filter((d) => d.region == regions_en[3])
               .style("visibility", "hidden");
           } else {
             checked_4 = 1;
@@ -1835,7 +1824,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[3])
+              .filter((d) => d.region == regions_en[3])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 4
@@ -1856,7 +1845,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[4])
+              .filter((d) => d.region == regions_en[4])
               .style("visibility", "hidden");
           } else {
             checked_5 = 1;
@@ -1869,7 +1858,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[4])
+              .filter((d) => d.region == regions_en[4])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 5
@@ -1890,7 +1879,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[5])
+              .filter((d) => d.region == regions_en[5])
               .style("visibility", "hidden");
           } else {
             checked_6 = 1;
@@ -1903,7 +1892,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[5])
+              .filter((d) => d.region == regions_en[5])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 6
@@ -1924,7 +1913,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[6])
+              .filter((d) => d.region == regions_en[6])
               .style("visibility", "hidden");
           } else {
             checked_7 = 1;
@@ -1937,7 +1926,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[6])
+              .filter((d) => d.region == regions_en[6])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 7
@@ -1958,7 +1947,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[7])
+              .filter((d) => d.region == regions_en[7])
               .style("visibility", "hidden");
           } else {
             checked_8 = 1;
@@ -1971,7 +1960,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[7])
+              .filter((d) => d.region == regions_en[7])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 8
@@ -1992,7 +1981,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[8])
+              .filter((d) => d.region == regions_en[8])
               .style("visibility", "hidden");
           } else {
             checked_9 = 1;
@@ -2005,7 +1994,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[8])
+              .filter((d) => d.region == regions_en[8])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 9
@@ -2026,7 +2015,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[9])
+              .filter((d) => d.region == regions_en[9])
               .style("visibility", "hidden");
           } else {
             checked_10 = 1;
@@ -2039,7 +2028,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.country == regions_en[9])
+              .filter((d) => d.region == regions_en[9])
               .style("visibility", "visible");
           }
         }; // --------- end of filter 10
@@ -2064,7 +2053,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[0])
+              .filter((d) => d.region == causes_en[0])
               .style("visibility", "hidden");
           } else {
             checked_11 = 1;
@@ -2077,7 +2066,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[0])
+              .filter((d) => d.region == causes_en[0])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 2
@@ -2098,7 +2087,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[1])
+              .filter((d) => d.region == causes_en[1])
               .style("visibility", "hidden");
           } else {
             checked_12 = 1;
@@ -2111,7 +2100,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[1])
+              .filter((d) => d.region == causes_en[1])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 2
@@ -2132,7 +2121,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[2])
+              .filter((d) => d.region == causes_en[2])
               .style("visibility", "hidden");
           } else {
             checked_13 = 1;
@@ -2145,7 +2134,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[2])
+              .filter((d) => d.region == causes_en[2])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 3
@@ -2166,7 +2155,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[3])
+              .filter((d) => d.region == causes_en[3])
               .style("visibility", "hidden");
           } else {
             checked_14 = 1;
@@ -2179,7 +2168,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[3])
+              .filter((d) => d.region == causes_en[3])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 4
@@ -2200,7 +2189,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[4])
+              .filter((d) => d.region == causes_en[4])
               .style("visibility", "hidden");
           } else {
             checked_15 = 1;
@@ -2213,7 +2202,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[4])
+              .filter((d) => d.region == causes_en[4])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 5
@@ -2234,7 +2223,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[5])
+              .filter((d) => d.region == causes_en[5])
               .style("visibility", "hidden");
           } else {
             checked_16 = 1;
@@ -2247,7 +2236,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[5])
+              .filter((d) => d.region == causes_en[5])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 6
@@ -2268,7 +2257,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[6])
+              .filter((d) => d.region == causes_en[6])
               .style("visibility", "hidden");
           } else {
             checked_17 = 1;
@@ -2281,7 +2270,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[6])
+              .filter((d) => d.region == causes_en[6])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 7
@@ -2302,7 +2291,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[7])
+              .filter((d) => d.region == causes_en[7])
               .style("visibility", "hidden");
           } else {
             checked_18 = 1;
@@ -2315,7 +2304,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[7])
+              .filter((d) => d.region == causes_en[7])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 8
@@ -2336,7 +2325,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[8])
+              .filter((d) => d.region == causes_en[8])
               .style("visibility", "hidden");
           } else {
             checked_19 = 1;
@@ -2349,7 +2338,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[8])
+              .filter((d) => d.region == causes_en[8])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 9
@@ -2370,7 +2359,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[9])
+              .filter((d) => d.region == causes_en[9])
               .style("visibility", "hidden");
           } else {
             checked_20 = 1;
@@ -2383,7 +2372,7 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.tournament == causes_en[9])
+              .filter((d) => d.region == causes_en[9])
               .style("visibility", "visible");
           }
         }; // --------- end of cause filter 10
@@ -2467,11 +2456,11 @@
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
 
-        // -------------------------------------- country tooltip
+        // -------------------------------------- region tooltip
 
-        var country_tooltip = div_main
+        var region_tooltip = div_main
           .append("div")
-          .attr("class", "country_tooltip")
+          .attr("class", "region_tooltip")
           .style("opacity", 0)
           .style("pointer-events", "none")
           .style("position", "absolute")
@@ -2487,15 +2476,15 @@
           .style("display", "inline");
 
         // move
-        var country_mousemove = function (d) {
-          country_tooltip.transition().duration(100).style("opacity", 1);
+        var region_mousemove = function (d) {
+          region_tooltip.transition().duration(100).style("opacity", 1);
 
-          country_tooltip
+          region_tooltip
             .html("<b> " + d.properties.name + "</b>")
             .style("left", d3.event.pageX - 30 + "px")
             .style("top", d3.event.pageY - 30 + "px");
 
-          d3.select("div.country_tooltip b")
+          d3.select("div.region_tooltip b")
             .style("font-size", "10px")
             .style("color", tooltip_col)
             .style("background-color", "rgba(1, 12, 22, 0.5)")
@@ -2506,15 +2495,15 @@
             .style("color", "grey");
 
           d3.select(this)
-            .style("fill", country_over_col)
+            .style("fill", region_over_col)
             .style("fill-opacity", 0.6)
             .style("stroke-opacity", 1)
             .style("stroke", moderate_col);
         };
 
         // leave
-        var country_mouseleave = function (d) {
-          country_tooltip
+        var region_mouseleave = function (d) {
+          region_tooltip
             .transition()
             .delay(2000)
             .duration(200)
@@ -2528,9 +2517,9 @@
         };
 
         // call the tooltip
-        d3.selectAll("path.country")
-          .on("mousemove", country_mousemove)
-          .on("mouseleave", country_mouseleave);
+        d3.selectAll("path.region")
+          .on("mousemove", region_mousemove)
+          .on("mouseleave", region_mouseleave);
 
         // logo
         var myimage = controller
@@ -2546,7 +2535,7 @@
           .style("opacity", 1)
           .attr("transform", "translate(30,335)");
 
-          */
+          
       } // --------------- end of draw function
       
     </script>
