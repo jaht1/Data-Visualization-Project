@@ -8,31 +8,29 @@
   </head>
   <body>
     <script>
-      // -------------------------------------- color variables
+      // Färgerna
+      var main_col = "#4d4dff";
+      var title_col = "#2a2a9f";
+      var subtitle_col = "#ffffff";
+      var white_col = "#ffffff";
+      var light_col = "#9f9fff";
+      var moderate_col = "#4d4dff";
+      var dark_col = "#e6e6e6";
+      var border_col = "#f2f2f2";
 
-  var main_col = "#4d4dff";
-  var title_col = "#2a2a9f";
-  var subtitle_col = "#ffffff";
-  var white_col = "#ffffff";
-  var light_col = "#9f9fff";
-  var moderate_col = "#4d4dff";
-  var dark_col = "#e6e6e6";
-  var border_col = "#f2f2f2";
+      // Background color
+      var back_col = "#ffffff";
 
- // Background color
-  var back_col = "#ffffff";
+      //Färgen på länderna
+      var country_col = "#333333";
+      var region_over_col = "#e6e6e6";
 
-  //country colors
-  var country_col = "#333333";
-  var region_over_col = "#e6e6e6";
+      var tooltip_col = "#fff";
+      var blue_col = "#0000ff";
 
-
-  var tooltip_col = "#fff";
-  var blue_col = "#0000ff";
-
-  //Hover
-  var button_over_col = "#f9f9f9";
-  var region_over_col = "#4d4d4d";
+      //Hover
+      var button_over_col = "#f9f9f9";
+      var region_over_col = "#4d4d4d";
 
       var regions_en = [
         "Mediterranean",
@@ -86,9 +84,7 @@
         "#55a630", //darkgreen
       ];
 
-      // -------------------------------------- main settings
-
-      // Background
+      // Bakgrund
       d3.select("body")
         .style("background", back_col)
         .style("font-family", "Verdana, Geneva, sans-serif")
@@ -144,11 +140,11 @@
       svg
         .append("text")
         .text("Immigrant deaths")
-        .attr("x", -20)
+        .attr("x", 450)
         .attr("y", 0)
         .style("fill", main_col)
-        .style("font", "10.9px Verdana")
-        .style("opacity", 0.9);
+        .style("font", "20px Arial");
+      //.style("opacity", 0.9);
 
       // what is this for?
       // banner back
@@ -161,20 +157,18 @@
 
       // -------------------------------------- geo data
 
-      const geoFile =  "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
+      const geoFile =
+        "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
 
-    //const dataFile = "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv"
-      const dataFile = "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv";
- 
+      const dataFile =
+        "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv";
+
       var map = {};
       var dataset = {};
-
-
 
       Promise.all([
         d3.json(geoFile),
         d3.csv(dataFile, function (row) {
-        
           return {
             serial: +row.serial,
             date: parseTime(row.date),
@@ -188,17 +182,14 @@
             lon: +row.lon,
             cord: [+row.lon, +row.lat],
             //Second numeric variable
-            year_avg: +row.year_incidents
-            
+            year_avg: +row.year_incidents,
           };
-          
         }),
       ]).then(function ([shapes, data]) {
         map.features = shapes.features;
         dataset = data;
 
-        
-       // console.log(map.features);
+        // console.log(map.features);
         //console.log(map.features[10].properties.name);
 
         popScale.domain(d3.extent(map.features, (d) => d.properties.density));
@@ -295,7 +286,6 @@
           .style("stroke", border_col)
           .style("stroke-width", "0.4");
 
-  
         // main circles
         svg
           .selectAll("circle.main_circles")
@@ -303,8 +293,8 @@
           .enter()
           .append("circle")
           .attr("class", "main_circles")
-          .attr("cx", d => projection(d.cord)[0])
-        .attr("cy", d => projection(d.cord)[1])
+          .attr("cx", (d) => projection(d.cord)[0])
+          .attr("cy", (d) => projection(d.cord)[1])
           .attr("r", (d) => areaScale(d.missing))
           .style("stroke", (d) => colorScale(d.missing))
           .style("fill", (d) => colorScale(d.missing))
@@ -319,8 +309,8 @@
           .enter()
           .append("circle")
           .attr("class", "contour_circles")
-          .attr("cx", d => projection(d.cord)[0])
-          .attr("cy", d => projection(d.cord)[1])
+          .attr("cx", (d) => projection(d.cord)[0])
+          .attr("cy", (d) => projection(d.cord)[1])
           .attr("r", (d) => areaScale(d.missing) + circleScale(5))
           .style("stroke", white_col)
           .style("fill", white_col)
@@ -346,6 +336,8 @@
           .append("g")
           .classed("axe", true)
           .attr("transform", "translate(0 , 610)")
+          //.attr("x", 450)
+          //.attr("y", -70)
           .call(timeAxis);
 
         // axis formatting
@@ -403,8 +395,12 @@
           .classed("time_lines", true)
           .attr("x1", (d) => timeScale(d.date))
           .attr("y1", (d) => 570 + d.random * 80) //610
-          .attr("x2", function (d) { return projection(d.cord)[0]; })
-          .attr("y2", function (d) { return projection(d.cord)[1]; })
+          .attr("x2", function (d) {
+            return projection(d.cord)[0];
+          })
+          .attr("y2", function (d) {
+            return projection(d.cord)[1];
+          })
           .style("stroke", (d) => projColorScale(d.missing))
           .style("stroke-opacity", (d) => projOpacScale(d.missing))
           .style("stroke-width", proj_stroke);
@@ -697,153 +693,6 @@
 
           joinLines1.transition().duration(500).attr("points", array1);
         };
-
-        // -------------------------------- on/off Categories Buttons Functions
-
-        // on
-        // down functions
-        var onDown = function (d) {
-          d3.select(this)
-            .transition()
-            .duration(1000)
-            .style("fill", button_over_col)
-            .style("stroke", white_col)
-            .style("stroke-width", "2px")
-            .style("stroke-opacity", 0.8);
-
-          d3.select("circle.off_button")
-            .transition()
-            .duration(1000)
-            .style("fill", back_col)
-            .style("stroke", moderate_col)
-            .style("stroke-width", "1px")
-            .style("stroke-opacity", 1);
-
-          regionLegend
-            .transition()
-            .duration(1000)
-            .delay(600)
-            .style("opacity", 1);
-
-          catButton.transition().duration(1000).style("opacity", 1);
-          //.style("visibility", "visible");
-
-          d3.select(".region_button")
-            .transition()
-            .duration(1000)
-            .style("fill", button_over_col)
-            .style("stroke", white_col)
-            .style("stroke-width", "2px")
-            .style("stroke-opacity", 0.8);
-
-          d3.select(".cause_button")
-            .transition()
-            .duration(1000)
-            .style("fill", back_col)
-            .style("stroke", moderate_col);
-
-          d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => regionScale(d.region))
-            .style("fill", (d) => regionScale(d.region));
-
-          d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => regionScale(d.region))
-            .style("fill", (d) => regionScale(d.region));
-
-          p3 = p3_1;
-
-          array1 = p1 + p2 + p3;
-
-          joinLines1.transition().duration(500).attr("points", array1);
-
-          p4 = p4_1;
-
-          array2 = p3 + p4 + p5 + p6;
-
-          joinLines2
-            .transition()
-            .duration(500)
-            .delay(500)
-            .attr("points", array2)
-            .style("opacity", 1);
-
-          d3.selectAll("line.time_lines").style("stroke", (d) =>
-            regionScale(d.region)
-          );
-
-          regionLegend.raise();
-
-          invert.transition().duration(1000).delay(500).style("opacity", 1);
-
-          d3.select(".invert_region").raise();
-
-          d3.select(".invert_text").text("Invert Selected Regions");
-        };
-
-        // off
-        // down functions
-        var offDown = function (d) {
-          d3.select(this)
-            .transition()
-            .duration(1000)
-            .style("fill", button_over_col)
-            .style("stroke", white_col)
-            .style("stroke-width", "2px")
-            .style("stroke-opacity", 0.8);
-
-          d3.select("circle.on_button")
-            .transition()
-            .duration(1000)
-            .style("fill", back_col)
-            .style("stroke", moderate_col)
-            .style("stroke-width", "1px")
-            .style("stroke-opacity", 1);
-
-          d3.selectAll(".join_line")
-            .transition()
-            .duration(500)
-            .style("opacity", 0);
-          //.style("visibility", "hidden");
-
-          catButton.transition().duration(1000).style("opacity", 0);
-          //.style("visibility", "hidden");
-
-          d3.select(".region_button")
-            .transition()
-            .duration(1000)
-            .style("fill", back_col);
-
-          regionLegend.transition().duration(1000).style("opacity", 0);
-
-          causeLegend.transition().duration(1000).style("opacity", 0);
-
-          d3.selectAll("circle.main_circles")
-            .style("stroke", (d) => colorScale(d.missing))
-            .style("fill", (d) => colorScale(d.missing));
-
-          d3.selectAll("circle.time_circles")
-            .style("stroke", (d) => colorScale(d.missing))
-            .style("fill", (d) => colorScale(d.missing));
-
-          p3 = p3_2;
-
-          array1 = p1 + p2 + p3;
-
-          joinLines1.transition().duration(500).attr("points", array1);
-
-          joinLines2.transition().duration(200).style("opacity", 0);
-
-          d3.selectAll("line.time_lines").style("stroke", (d) =>
-            projColorScale(d.missing)
-          );
-
-          invert.transition().duration(1000).style("opacity", 0);
-
-          d3.select(".invert_region").raise();
-        };
-
-        // -------------------------------- region / cause Buttons Functions
-
         // region
         // down functions
         var regionDown = function (d) {
@@ -889,11 +738,10 @@
 
           joinLines2.transition().duration(500).attr("points", array2);
 
-          d3.selectAll("line.time_lines").style("stroke", (d) =>
-            regionScale(d.region)
-          )
-          .style("stroke", d => causeScale(d.region))
-          .style("stroke", d => colorScale(d.missing))
+          d3.selectAll("line.time_lines")
+            .style("stroke", (d) => regionScale(d.region))
+            .style("stroke", (d) => causeScale(d.region))
+            .style("stroke", (d) => colorScale(d.missing));
 
           regionLegend.raise();
 
@@ -950,9 +798,9 @@
           joinLines2.transition().duration(500).attr("points", array2);
 
           d3.selectAll("line.time_lines")
-            .style("stroke", d => regionScale(d.region))
+            .style("stroke", (d) => regionScale(d.region))
             .style("stroke", (d) => causeScale(d.region))
-          .style("stroke", d => colorScale(d.missing))
+            .style("stroke", (d) => colorScale(d.missing));
 
           causeLegend.raise();
 
@@ -970,33 +818,21 @@
 
         // invert region
         // down functions
-        var invertRegion = function (d) {
-          regionFilter1();
-          regionFilter2();
-          regionFilter3();
-          regionFilter4();
-          regionFilter5();
-          regionFilter6();
-          regionFilter7();
-          regionFilter8();
-          regionFilter9();
-          regionFilter10();
-        };
 
+        //LOOP
+
+        var invertRegion = function (d) {
+          for (var i = 0; i < 4; i++) {
+            regionFilter(i);
+          }
+        };
         // invert cause
         // down functions
         var invertCause = function (d) {
-          causeFilter1();
-          causeFilter2();
-          causeFilter3();
-          causeFilter4();
-          causeFilter5();
-          causeFilter6();
-          causeFilter7();
-          causeFilter8();
-          causeFilter9();
-          causeFilter10();
-        };
+          for (var i = 0; i < 10; i++) {
+          causeFilter(i);
+          }
+          };
 
         // -------------------------------------- start button
 
@@ -1037,11 +873,11 @@
         startButton
           .append("text")
           .classed("start_text", true)
-          .attr("x", -4)
+          .attr("x", 450)
           .attr("y", -7)
-          .text("Timelapse ")
+          .text("Tidslinje")
           .style("fill", main_col)
-          .style("font-size", "8px")
+          .style("font-size", "10px")
           .attr("transform", "translate(0,-40)");
 
         // -------------------------------------- end circle
@@ -1260,147 +1096,6 @@
           .style("stroke-width", 1)
           .style("stroke-opacity", 0.8)
           .on("mousedown", offProj)
-          .on("mouseover", overGeneral)
-          .on("mouseleave", leaveGeneral);
-
-        // -------------------------------------- switch ON / OFF Button
-        // switch button
-        var switchButton = controller
-          .append("g")
-          .classed("cat_button", true)
-          .attr("transform", "translate(0,0)");
-
-        // title
-        switchButton
-          .append("text")
-          .classed("cat_text", true)
-          .attr("x", 0)
-          .attr("y", -8)
-          .html("Categories :")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        switchButton
-          .append("text")
-          .classed("cat_text", true)
-          .attr("x", 74)
-          .attr("y", -8)
-          .html("ON")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        switchButton
-          .append("text")
-          .classed("cat_text", true)
-          .attr("x", 116)
-          .attr("y", -8)
-          .html("OFF")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        // switch circles
-        // ON
-        switchButton
-          .append("circle")
-          .classed("on_button", true)
-          .attr("cx", 59)
-          .attr("cy", -11)
-          .attr("r", 7)
-          .style("stroke", moderate_col)
-          .attr("stroke-width", "1px")
-          .attr("stroke-opacity", 1)
-          .style("fill", back_col)
-          .style("fill-opacity", 1)
-          .on("mousedown", onDown)
-          .on("mouseover", overGeneral)
-          .on("mouseleave", leaveGeneral);
-
-        // OFF
-        switchButton
-          .append("circle")
-          .classed("off_button", true)
-          .attr("cx", 102)
-          .attr("cy", -11)
-          .attr("r", 7)
-          .style("fill", button_over_col)
-          .style("fill-opacity", 1)
-          .style("stroke", white_col)
-          .style("stroke-width", 2)
-          .style("stroke-opacity", 0.8)
-          .on("mousedown", offDown)
-          .on("mouseover", overGeneral)
-          .on("mouseleave", leaveGeneral);
-
-        // -------------------------------------- by Region / Cause switch button
-        // categories button
-        var catButton = controller
-          .append("g")
-          .classed("switch_button", true)
-          .attr("transform", "translate(0,30)");
-
-        // death text
-        catButton
-          .append("text")
-          .classed("death_text", true)
-          .attr("x", 0)
-          .attr("y", -8)
-          .html("Death :")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        // cause text
-        catButton
-          .append("text")
-          .classed("region_cause_text", true)
-          .attr("x", 51)
-          .attr("y", -8)
-          .text("Region")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        catButton
-          .append("text")
-          .classed("region_cause_text", true)
-          .attr("x", 108)
-          .attr("y", -8)
-          .text("Cause")
-          .style("fill", main_col)
-          .style("font-size", "8px")
-          .attr("transform", "translate(-2,0)");
-
-        // region circle
-        catButton
-          .append("circle")
-          .classed("region_button", true)
-          .attr("cx", 38)
-          .attr("cy", -11)
-          .attr("r", 6)
-          .style("stroke", white_col)
-          .style("stroke-width", "2px")
-          .style("stroke-opacity", 0.8)
-          .style("fill", back_col)
-          .style("fill-opacity", 1)
-          .on("mousedown", regionDown)
-          .on("mouseover", overGeneral)
-          .on("mouseleave", leaveGeneral);
-
-        // cause circle
-        catButton
-          .append("circle")
-          .classed("cause_button", true)
-          .attr("cx", 94)
-          .attr("cy", -11)
-          .attr("r", 6)
-          .style("stroke", moderate_col)
-          .style("stroke-width", "1px")
-          .style("fill", back_col)
-          .style("fill-opacity", 1)
-          .on("mousedown", causeDown)
           .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
@@ -1683,7 +1378,7 @@
 
         // -------------------------------------- Intial conditions
 
-        catButton.style("opacity", 0);
+        //  catButton.style("opacity", 0);
 
         regionLegend.style("opacity", 0);
 
@@ -1702,15 +1397,13 @@
         // region filters
 
         // ---------- filter 1
+        // LOOP
+        var checked = Array(4).fill(1);
 
-        var checked_1 = 1;
-
-
-        // FIX
-        var regionFilter1 = function (d) {
-          if (checked_1 == 1) {
-            checked_1 = 0;
-            d3.select("circle.region_circle0")
+        function regionFilter(index) {
+          if (checked[index] == 1) {
+            checked[index] = 0;
+            d3.select(`circle.region_circle${index}`)
               .transition()
               .duration(200)
               .attr("r", 5)
@@ -1719,11 +1412,11 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.region == regions_en[0])
+              .filter((d) => d.region == regions_en[index])
               .style("visibility", "hidden");
           } else {
-            checked_1 = 1;
-            d3.select("circle.region_circle0")
+            checked[index] = 1;
+            d3.select(`circle.region_circle${index}`)
               .transition()
               .duration(200)
               .attr("r", 6)
@@ -1732,342 +1425,41 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.region == regions_en[0])
+              .filter((d) => d.region == regions_en[index])
               .style("visibility", "visible");
           }
-        }; // --------- end of filter 1
-
-        // ---------- filter 2
-
-        var checked_2 = 1;
-
-        var regionFilter2 = function (d) {
-          if (checked_2 == 1) {
-            checked_2 = 0;
-            d3.select("circle.region_circle1")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[1])
-              .style("visibility", "hidden");
-          } else {
-            checked_2 = 1;
-            d3.select("circle.region_circle1")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[1])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 2
-
-        // ---------- filter 3
-
-        var checked_3 = 1;
-
-        var regionFilter3 = function (d) {
-          if (checked_3 == 1) {
-            checked_3 = 0;
-            d3.select("circle.region_circle2")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[2])
-              .style("visibility", "hidden");
-          } else {
-            checked_3 = 1;
-            d3.select("circle.region_circle2")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[2])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 3
-
-        // ---------- filter 4
-
-        var checked_4 = 1;
-
-        var regionFilter4 = function (d) {
-          if (checked_4 == 1) {
-            checked_4 = 0;
-            d3.select("circle.region_circle3")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[3])
-              .style("visibility", "hidden");
-          } else {
-            checked_4 = 1;
-            d3.select("circle.region_circle3")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[3])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 4
-
-        // ---------- filter 5
-
-        var checked_5 = 1;
-
-        var regionFilter5 = function (d) {
-          if (checked_5 == 1) {
-            checked_5 = 0;
-            d3.select("circle.region_circle4")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[4])
-              .style("visibility", "hidden");
-          } else {
-            checked_5 = 1;
-            d3.select("circle.region_circle4")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[4])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 5
-
-        // ---------- filter 6
-
-        var checked_6 = 1;
-
-        var regionFilter6 = function (d) {
-          if (checked_6 == 1) {
-            checked_6 = 0;
-            d3.select("circle.region_circle5")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[5])
-              .style("visibility", "hidden");
-          } else {
-            checked_6 = 1;
-            d3.select("circle.region_circle5")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[5])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 6
-
-        // ---------- filter 7
-
-        var checked_7 = 1;
-
-        var regionFilter7 = function (d) {
-          if (checked_7 == 1) {
-            checked_7 = 0;
-            d3.select("circle.region_circle6")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[6])
-              .style("visibility", "hidden");
-          } else {
-            checked_7 = 1;
-            d3.select("circle.region_circle6")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[6])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 7
-
-        // ---------- filter 8
-
-        var checked_8 = 1;
-
-        var regionFilter8 = function (d) {
-          if (checked_8 == 1) {
-            checked_8 = 0;
-            d3.select("circle.region_circle7")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[7])
-              .style("visibility", "hidden");
-          } else {
-            checked_8 = 1;
-            d3.select("circle.region_circle7")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[7])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 8
-
-        // ---------- filter 9
-
-        var checked_9 = 1;
-
-        var regionFilter9 = function (d) {
-          if (checked_9 == 1) {
-            checked_9 = 0;
-            d3.select("circle.region_circle8")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[8])
-              .style("visibility", "hidden");
-          } else {
-            checked_9 = 1;
-            d3.select("circle.region_circle8")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[8])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 9
-
-        // ---------- filter 10
-
-        var checked_10 = 1;
-
-        var regionFilter10 = function (d) {
-          if (checked_10 == 1) {
-            checked_10 = 0;
-            d3.select("circle.region_circle9")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[9])
-              .style("visibility", "hidden");
-          } else {
-            checked_10 = 1;
-            d3.select("circle.region_circle9")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == regions_en[9])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of filter 10
-
-        // -------------------------------------- cause filter functions
+        }
 
         // cause filters
 
-        // ---------- cause filter 1
+        var checked = Array(4).fill(1);
 
-        var checked_11 = 1;
- // FIX
-        var causeFilter1 = function (d) {
-          if (checked_11 == 1) {
-            checked_11 = 0;
-            d3.select("circle.cause_circle0")
+        function causeFilter(index) {
+          if (checked[index] == 1) {
+            checked[index] = 0;
+            d3.select(`circle.cause_circle${index}`)
               .transition()
               .duration(200)
               .attr("r", 5)
               .style("fill", back_col);
 
+            for (var i = 0; i < 4; i++) {
+              d3.select(`circle.region_circle${i}`).on(
+                "mousedown",
+                function () {
+                  regionFilter(i);
+                }
+              );
+            }
+
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.region == causes_en[0])
+              .filter((d) => d.region == causes_en[index])
               .style("visibility", "hidden");
           } else {
-            checked_11 = 1;
-            d3.select("circle.cause_circle0")
+            checked[index] = 1;
+            d3.select(`circle.cause_circle${index}`)
               .transition()
               .duration(200)
               .attr("r", 6)
@@ -2076,338 +1468,23 @@
             d3.selectAll(
               "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
             )
-              .filter((d) => d.region == causes_en[0])
+              .filter((d) => d.region == causes_en[index])
               .style("visibility", "visible");
           }
-        }; // --------- end of cause filter 2
+        }
 
-        // ---------- cause filter 1
+        for (var i = 0; i < 4; i++) {
+          d3.select(`circle.cause_circle${i}`).on(
+            "mousedown",
+            causeFilter.bind(null, i)
+          );
+        }
 
-        var checked_12 = 1;
-
-        var causeFilter2 = function (d) {
-          if (checked_12 == 1) {
-            checked_12 = 0;
-            d3.select("circle.cause_circle1")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[1])
-              .style("visibility", "hidden");
-          } else {
-            checked_12 = 1;
-            d3.select("circle.cause_circle1")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[1])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 2
-
-        // ---------- cause filter 3
-
-        var checked_13 = 1;
-
-        var causeFilter3 = function (d) {
-          if (checked_13 == 1) {
-            checked_13 = 0;
-            d3.select("circle.cause_circle2")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[2])
-              .style("visibility", "hidden");
-          } else {
-            checked_13 = 1;
-            d3.select("circle.cause_circle2")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[2])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 3
-
-        // ---------- cause filter 4
-
-        var checked_14 = 1;
-
-        var causeFilter4 = function (d) {
-          if (checked_14 == 1) {
-            checked_14 = 0;
-            d3.select("circle.cause_circle3")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[3])
-              .style("visibility", "hidden");
-          } else {
-            checked_14 = 1;
-            d3.select("circle.cause_circle3")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[3])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 4
-
-        // ---------- cause filter 5
-
-        var checked_15 = 1;
-
-        var causeFilter5 = function (d) {
-          if (checked_15 == 1) {
-            checked_15 = 0;
-            d3.select("circle.cause_circle4")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[4])
-              .style("visibility", "hidden");
-          } else {
-            checked_15 = 1;
-            d3.select("circle.cause_circle4")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[4])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 5
-
-        // ---------- cause filter 6
-
-        var checked_16 = 1;
-
-        var causeFilter6 = function (d) {
-          if (checked_16 == 1) {
-            checked_16 = 0;
-            d3.select("circle.cause_circle5")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[5])
-              .style("visibility", "hidden");
-          } else {
-            checked_16 = 1;
-            d3.select("circle.cause_circle5")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[5])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 6
-
-        // ---------- cause filter 7
-
-        var checked_17 = 1;
-
-        var causeFilter7 = function (d) {
-          if (checked_17 == 1) {
-            checked_17 = 0;
-            d3.select("circle.cause_circle6")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[6])
-              .style("visibility", "hidden");
-          } else {
-            checked_17 = 1;
-            d3.select("circle.cause_circle6")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[6])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 7
-
-        // ---------- cause filter 8
-
-        var checked_18 = 1;
-
-        var causeFilter8 = function (d) {
-          if (checked_18 == 1) {
-            checked_18 = 0;
-            d3.select("circle.cause_circle7")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[7])
-              .style("visibility", "hidden");
-          } else {
-            checked_18 = 1;
-            d3.select("circle.cause_circle7")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[7])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 8
-
-        // ---------- cause filter 9
-
-        var checked_19 = 1;
-
-        var causeFilter9 = function (d) {
-          if (checked_19 == 1) {
-            checked_19 = 0;
-            d3.select("circle.cause_circle8")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[8])
-              .style("visibility", "hidden");
-          } else {
-            checked_19 = 1;
-            d3.select("circle.cause_circle8")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[8])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 9
-
-        // ---------- cause filter 10
-
-        var checked_20 = 1;
-
-        var causeFilter10 = function (d) {
-          if (checked_20 == 1) {
-            checked_20 = 0;
-            d3.select("circle.cause_circle9")
-              .transition()
-              .duration(200)
-              .attr("r", 5)
-              .style("fill", back_col);
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[9])
-              .style("visibility", "hidden");
-          } else {
-            checked_20 = 1;
-            d3.select("circle.cause_circle9")
-              .transition()
-              .duration(200)
-              .attr("r", 6)
-              .style("fill", (d) => causeScale(d));
-
-            d3.selectAll(
-              "circle.main_circles, circle.contour_circles, circle.time_circles, line.time_lines"
-            )
-              .filter((d) => d.region == causes_en[9])
-              .style("visibility", "visible");
-          }
-        }; // --------- end of cause filter 10
-
-        d3.select("circle.region_circle0").on("mousedown", regionFilter1);
-        d3.select("circle.region_circle1").on("mousedown", regionFilter2);
-        d3.select("circle.region_circle2").on("mousedown", regionFilter3);
-        d3.select("circle.region_circle3").on("mousedown", regionFilter4);
-        d3.select("circle.region_circle4").on("mousedown", regionFilter5);
-        d3.select("circle.region_circle5").on("mousedown", regionFilter6);
-        d3.select("circle.region_circle6").on("mousedown", regionFilter7);
-        d3.select("circle.region_circle7").on("mousedown", regionFilter8);
-        d3.select("circle.region_circle8").on("mousedown", regionFilter9);
-        d3.select("circle.region_circle9").on("mousedown", regionFilter10);
-
-        d3.select("circle.cause_circle0").on("mousedown", causeFilter1);
-        d3.select("circle.cause_circle1").on("mousedown", causeFilter2);
-        d3.select("circle.cause_circle2").on("mousedown", causeFilter3);
-        d3.select("circle.cause_circle3").on("mousedown", causeFilter4);
-        d3.select("circle.cause_circle4").on("mousedown", causeFilter5);
-        d3.select("circle.cause_circle5").on("mousedown", causeFilter6);
-        d3.select("circle.cause_circle6").on("mousedown", causeFilter7);
-        d3.select("circle.cause_circle7").on("mousedown", causeFilter8);
-        d3.select("circle.cause_circle8").on("mousedown", causeFilter9);
-        d3.select("circle.cause_circle9").on("mousedown", causeFilter10);
+        for (var i = 0; i < 10; i++) {
+          d3.select(`circle.cause_circle${i}`).on("mousedown", function () {
+            causeFilter(i);
+          });
+        }
 
         // -------------------------------------- dots tooltip
 
@@ -2430,7 +1507,7 @@
 
         // move
         var mousemove = function (d) {
-          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip.transition().duration(500).style("opacity", 0.99);
 
           tooltip
             .html(
@@ -2530,9 +1607,7 @@
         d3.selectAll("path.region")
           .on("mousemove", region_mousemove)
           .on("mouseleave", region_mouseleave);
-
       } // --------------- end of draw function
-      
     </script>
   </body>
 </html>
