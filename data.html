@@ -2,12 +2,16 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Immigrant data</title>
+    <title>Immigrant deaths</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <style></style>
   </head>
   <body>
     <script>
+
+      // Bakgrundsfärg
+      var back_col = "#ffffff";
+
       // Färgerna
       var main_col = "#4d4dff";
       var title_col = "#2a2a9f";
@@ -17,9 +21,6 @@
       var moderate_col = "#4d4dff";
       var dark_col = "#e6e6e6";
       var border_col = "#f2f2f2";
-
-      // Background color
-      var back_col = "#ffffff";
 
       //Färgen på länderna
       var country_col = "#333333";
@@ -46,16 +47,16 @@
       ];
 
       var regions_cols = [
-        "#3e3ec9", //blue
-        "#FF6699", //pink
-        "#faff69", //yellow
-        "#55a630", //darkgreen
-        "#FFA726", //orange
-        "#5af2b4", //green
-        "#279fdb", //lightblue
-        "#CC66FF", //violet
-        "#D3D3D3", //grey
-        "#BC8F8F", //brown
+        "#3e3ec9", 
+        "#FF6699", 
+        "#faff69", 
+        "#55a630", 
+        "#FFA726", 
+        "#5af2b4", 
+        "#279fdb", 
+        "#CC66FF", 
+        "#D3D3D3", 
+        "#BC8F8F", 
       ];
 
       var causes_en = [
@@ -72,17 +73,22 @@
       ];
 
       var causes_cols = [
-        "#3e3ec9", //blue
-        "#5af2b4", //green
-        "#faff69", //yellow
-        "#CC66FF", //violet
-        "#FFA726", //orange
-        "#D3D3D3", //grey
-        "#FF6699", //pink
-        "#BC8F8F", //brown
-        "#279fdb", //lightblue
-        "#55a630", //darkgreen
+        "#3e3ec9", 
+        "#5af2b4", 
+        "#faff69", 
+        "#CC66FF", 
+        "#FFA726", 
+        "#D3D3D3", 
+        "#FF6699", 
+        "#BC8F8F", 
+        "#279fdb", 
+        "#55a630", 
       ];
+      
+      // Marginal
+      var margin = { top: 65, right: 50, bottom: 20, left: 50 },
+      width = 1200 - margin.left - margin.right,
+      height = 740 - margin.top - margin.bottom;
 
       // Bakgrund
       d3.select("body")
@@ -90,12 +96,14 @@
         .style("font-family", "Verdana, Geneva, sans-serif")
         .attr("height", "700px");
 
-      // Margin
-      var margin = { top: 65, right: 50, bottom: 20, left: 50 },
-        width = 1200 - margin.left - margin.right,
-        height = 740 - margin.top - margin.bottom;
+      // Div för svg
+      var div_main = d3
+      .select("body")
+      .append("div")
+      .attr("id", "div_main")
+      .style("margin", "50px auto");
 
-      // Time variables
+      // Tidsvariabler
       var in_delay = 20;
       var tot_delay = 5505 * in_delay;
       var main_dots_time = 3000;
@@ -103,40 +111,29 @@
       var contour_dots_time2 = 1000;
       var contour_dots_delay = 3;
 
-      // -------------------------------------- div for svg
 
-      var div_main = d3
-        .select("body")
-        .append("div")
-        .attr("id", "div_main")
-        // .style("border", "10px solid white")
-        .style("margin", "50px auto");
 
-      // -------------------------------------- svg board
-
+      // Svg board
       var svg = div_main
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .style("display", "block")
         .style("margin", "0px auto")
-        // .style("border", "2px solid grey")
         .style("background", back_col)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // -------------------------------------- title & subtitle
-
-      // Title
+      // Rubrik och underrubrik
+      // Rubik
       var story = svg
         .append("image")
-        //.attr('xlink:href', "http://alhadaqa.com/wp-content/uploads/2019/08/life4.png")
         .attr("width", 480)
         .attr("height", 100)
         .style("opacity", 1)
         .attr("transform", "translate(-20,-70)");
 
-      // Sub-Title
+      // Underrubrik
       svg
         .append("text")
         .text("Immigrant deaths")
@@ -144,10 +141,8 @@
         .attr("y", 0)
         .style("fill", main_col)
         .style("font", "20px Arial");
-      //.style("opacity", 0.9);
 
-      // what is this for?
-      // banner back
+      // Banner
       var story = svg
         .append("image")
         .attr("width", 1160)
@@ -155,13 +150,14 @@
         .style("opacity", 1)
         .attr("transform", "translate(-20,-110)");
 
-      // -------------------------------------- geo data
-
-      const geoFile =
-        "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
+      // Geografisk data
 
       const dataFile =
         "https://raw.githubusercontent.com/mohamadwaked/classico/master/p0017_dataset.csv";
+      const geoFile =
+        "https://raw.githubusercontent.com/mohamadwaked/classico/master/world_map_ar.geojson";
+
+
 
       var map = {};
       var dataset = {};
@@ -174,14 +170,14 @@
             date: parseTime(row.date),
             region: row.region,
             year: row.year,
-            //Main numeric value
+            // Nummervärde
             missing: +row.total_death_missing,
             cause: row.cause_of_death,
             random: row.random,
             lat: +row.lat,
             lon: +row.lon,
             cord: [+row.lon, +row.lat],
-            //Second numeric variable
+            //Secondary nummervärde
             year_avg: +row.year_incidents,
           };
         }),
@@ -189,47 +185,44 @@
         map.features = shapes.features;
         dataset = data;
 
-        // console.log(map.features);
-        //console.log(map.features[10].properties.name);
-
         popScale.domain(d3.extent(map.features, (d) => d.properties.density));
 
-        // Call the draw function
+        // Kallar på draw
         draw();
       });
 
-      // -------------------------------------- map
+      // Kartan
 
-      // Projection
+      // Projektion
       const projection = d3
-        .geoNaturalEarth1() //d3.geoNaturalEarth1() d3.geoMercator()
+        .geoNaturalEarth1() 
         .scale(200)
         .translate([width / 2 - 140, height / 2 + 10]);
 
-      // Path generator
+      // Genererar pathen
       const geoPath = d3.geoPath().projection(projection);
 
-      // -------------------------------------- scale
+      // Skalan
 
-      // Area Scale
-      var areaScale = d3.scaleSqrt().domain([0, 800]).range([0.6, 7]);
-
-      // Circle Scale
+      // Cirkelns skala
       var circleScale = d3.scaleSqrt().domain([0, 10]).range([0, 5]);
 
-      // Color Scale
+      // Area skala
+      var areaScale = d3.scaleSqrt().domain([0, 800]).range([0.6, 7]);
+
+      // Färgskala
       var colorScale = d3
         .scaleLinear()
         .domain([0, 800])
         .range([moderate_col, light_col]);
 
-      // opacity Scale
+      // Opasitetens skala
       var opacityScale = d3.scaleLinear().domain([0, 600]).range([0.5, 0.9]); // when using colors the scale has to start at 0.4
 
-      // Projections opacity Scale
+      // Projektionens opasitetsskala
       var projOpacScale = d3.scaleLinear().domain([0, 1000]).range([0.1, 0.9]); // when using colors the scale has to start at 0.4
 
-      // Projection Color Scale
+      // Projektionens färgskala
       var projColorScale = d3
         .scaleLinear()
         .domain([0, 300])
@@ -237,26 +230,26 @@
 
       const popScale = d3.scaleSequentialSqrt(d3.interpolateBlues);
 
-      // Regions color scale
+      // Regionernas färgskala
       var regionScale = d3
         .scaleOrdinal()
         .domain(regions_en)
         .range(regions_cols);
 
-      // Cause of death color scale
+      // Dödsorsakernas färgskala
       var causeScale = d3.scaleOrdinal().domain(causes_en).range(causes_cols);
 
-      // -------------------------------------- time parse, formate
+      // Time parse format
 
-      // Parse date
+      // Parse datum
       var parseTime = d3.timeParse("%e-%b-%Y");
       console.log(parseTime("9-Feb-1917")); // test the formula
 
-      // Formate date
+      // Formatera datum
       var formatTime = d3.timeFormat("%e %b %y");
       console.log(formatTime(new Date())); // test the formula
 
-      // Axis scale
+      // Axelns skala
       var timeScale = d3
         .scaleTime()
         .domain([parseTime("1-Jan-2014"), parseTime("26-Jun-2019")])
@@ -269,11 +262,9 @@
         .tickSizeOuter(0)
         .tickPadding(35);
 
-      // -------------------------------------------------------------------------------
-
-      // the draw function
+      // draw funktion
       function draw() {
-        // region path
+        // regionernas path
         svg
           .selectAll("path.region")
           .data(map.features)
@@ -286,7 +277,7 @@
           .style("stroke", border_col)
           .style("stroke-width", "0.4");
 
-        // main circles
+        // cirklarna
         svg
           .selectAll("circle.main_circles")
           .data(dataset)
@@ -294,33 +285,31 @@
           .append("circle")
           .attr("class", "main_circles")
           .attr("cx", (d) => projection(d.cord)[0])
+          .attr("stroke-width", 0.4)
+          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
           .attr("cy", (d) => projection(d.cord)[1])
           .attr("r", (d) => areaScale(d.missing))
           .style("stroke", (d) => colorScale(d.missing))
           .style("fill", (d) => colorScale(d.missing))
-          .attr("stroke-width", 0.4)
-          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
           .style("fill-opacity", (d) => opacityScale(d.missing) + 0.2);
 
-        // contour circles
+        // cirklarnas konturer
         svg
           .selectAll("circle.contour_circles")
           .data(dataset)
           .enter()
           .append("circle")
           .attr("class", "contour_circles")
+          .style("stroke-opacity", 0.085)
+          .attr("stroke-width", 0.2)
           .attr("cx", (d) => projection(d.cord)[0])
           .attr("cy", (d) => projection(d.cord)[1])
           .attr("r", (d) => areaScale(d.missing) + circleScale(5))
           .style("stroke", white_col)
           .style("fill", white_col)
-          .style("stroke-opacity", 0.085)
-          .attr("stroke-width", 0.2)
           .style("fill-opacity", 0);
 
-        // -------------------------------------- cover
-
-        // Cover the lower area with rect
+        // täck med rektangel
         var rect = svg
           .append("rect")
           .attr("x", 0)
@@ -329,72 +318,65 @@
           .attr("height", 200)
           .style("fill", back_col);
 
-        // -------------------------------------- timeline
+        // tidlinje
 
-        // Draw the Axies
+        // rita axlarna
         svg
           .append("g")
           .classed("axe", true)
           .attr("transform", "translate(0 , 610)")
-          //.attr("x", 450)
-          //.attr("y", -70)
           .call(timeAxis);
 
-        // axis formatting
+        // axlarnas formattering
 
-        // format the domain
+        // formattera domainen
         d3.selectAll("g.axe .domain, g.axe g.tick line")
           .style("stroke", main_col)
           .style("opacity", 0.2);
-        //.style("stroke-dasharray", "3 6");
 
-        // make centered ticks
+        // centrera ticks
         d3.selectAll("g.axe g.tick line")
           .attr("y1", -3)
           .attr("y2", 4)
           .style("opacity", 0.8)
           .style("stroke", main_col);
 
-        // adjust font size and opacity
+        // font storlek och opacitet
         d3.selectAll("g.axe g.tick text")
           .style("font-size", "8px")
           .style("color", main_col)
           .style("opacity", 1);
 
-        // -------------------------------------- circles on timeline
+        // cirklarna i tidsdlinjen
 
-        // Draw the circles on timeline
+        // draw cirklarna i tidslinjen
         svg
           .selectAll("circle.time_circles")
-          .data(dataset) //.filter(d => d.tens == "1910-1920")
+          .data(dataset) 
           .enter()
           .append("circle")
           .classed("time_circles", true)
+          .attr("stroke-width", 0.4)
+          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
           .attr("cx", (d) => timeScale(d.date))
           .attr("cy", (d) => 570 + d.random * 90)
           .attr("r", (d) => areaScale(d.missing))
-          //.style("stroke", white_col)
-          .attr("stroke-width", 0.4)
-          .style("stroke-opacity", (d) => opacityScale(d.missing) + 0.1)
-          //.style("fill", white_col)
           .style("fill-opacity", (d) => opacityScale(d.missing))
           .style("fill", (d) => colorScale(d.missing))
           .style("stroke", (d) => colorScale(d.missing));
 
-        // -------------------------------------- projections on timeline
-
-        // Draw the projections on timeline
+        // projektioner i tidslinjen
 
         var proj_stroke = "0.2px";
 
         svg
           .selectAll("line.time_lines")
-          .data(dataset) //.filter(d => d.tens == "1910-1920")
+          .data(dataset) 
           .enter()
           .append("line")
           .classed("time_lines", true)
           .attr("x1", (d) => timeScale(d.date))
-          .attr("y1", (d) => 570 + d.random * 80) //610
+          .attr("y1", (d) => 570 + d.random * 80)
           .attr("x2", function (d) {
             return projection(d.cord)[0];
           })
@@ -405,12 +387,10 @@
           .style("stroke-opacity", (d) => projOpacScale(d.missing))
           .style("stroke-width", proj_stroke);
 
-        // -------------------------------------- play function
-
-        // play function
+        // play-funktionen
 
         var play = function (d) {
-          // hide button while playing
+          // göm knappen när igång
           d3.select(this)
             .transition()
             .duration(2000)
@@ -423,17 +403,17 @@
           d3.select(".start_circle")
             .transition()
             .duration(2000)
-            .attr("r", 2)
             .attr("stroke-width", 1)
             .style("fill-opacity", 1)
             .transition()
             .duration(2000)
             .delay(tot_delay + 1000)
+            .attr("r", 2)
             .attr("r", 10)
             .attr("stroke-width", 0.7)
             .style("fill-opacity", 0);
 
-          // play projection lines
+          // play projektionerna i linjen
           d3.selectAll("line.time_lines")
             .style("stroke-width", "0px")
             .style("stroke-opacity", (d) => projOpacScale(d.missing))
@@ -445,7 +425,7 @@
                 .style("stroke-width", proj_stroke);
             });
 
-          // play main circles
+          // play cirklarna
           d3.selectAll("circle.main_circles")
             .attr("r", 0)
             .each(function (d, i) {
@@ -456,18 +436,13 @@
                 .attr("r", (d) => areaScale(d.missing));
             });
 
-          // play countour circles
+          // play cirklarnas konturer
           d3.selectAll("circle.contour_circles")
             .attr("r", 0)
             .each(function (d, i) {
               d3.select(this)
                 .transition()
                 .duration(contour_dots_time1)
-                .delay(i * in_delay)
-                .style("stroke", white_col)
-                .attr("stroke-width", 0.8)
-                .style("stroke-opacity", 0.9)
-                .style("fill-opacity", 0.7)
                 .attr("r", (d) => areaScale(d.missing) + circleScale(0))
                 .transition()
                 .duration(contour_dots_time2)
@@ -475,10 +450,15 @@
                 .attr("r", (d) => areaScale(d.missing) + circleScale(5))
                 .style("stroke-opacity", 0.085)
                 .attr("stroke-width", 0.2)
+                .delay(i * in_delay)
+                .style("stroke", white_col)
+                .attr("stroke-width", 0.8)
+                .style("stroke-opacity", 0.9)
+                .style("fill-opacity", 0.7)
                 .style("fill-opacity", 0);
             });
 
-          // play time circles
+          // play cirklarnas tider
           d3.selectAll("circle.time_circles")
             .attr("r", (d) => Math.random())
             .attr("cx", (d) => timeScale(d.date))
@@ -500,32 +480,28 @@
             });
         };
 
-        // -------------------------------------- Play Button Functions
+        // Play-knappen
 
-        // over function
+        // mouseover funktion
         var over = function (d) {
           d3.select(this)
-            //.style("stroke", white_col)
             .style("fill", main_col);
         };
 
-        // move function
+        // move funktion
         var move = function (d) {
           d3.select(this)
-            //.style("stroke", white_col)
             .style("fill", main_col);
         };
 
-        // leave function
+        // bort funktion
         var leave = function (d) {
           d3.select(this).style("fill", white_col);
-          //.style("stroke", main_col)
         };
 
-        // -------------------------------- Speed Buttons Functions
+        // hastighetsknapparna
 
         // 1x
-        // down functions
         var speedDownLow = function (d) {
           d3.select(this)
             .transition()
@@ -554,7 +530,6 @@
         };
 
         // 2x
-        // down functions
         var speedDownMedium = function (d) {
           d3.select(this)
             .transition()
@@ -583,7 +558,6 @@
         };
 
         // 4x
-        // down functions
         var speedDownHigh = function (d) {
           d3.select(this)
             .transition()
@@ -611,30 +585,29 @@
           joinLines1.transition().duration(500).attr("points", array1);
         };
 
-        // over general function
+        // över
         var overGeneral = function (d) {
           d3.select(this).transition().duration(200).style("fill", dark_col);
         };
 
-        // leave general function
+        // bort
         var leaveGeneral = function (d) {
           d3.select(this).transition().duration(200).style("fill", back_col);
         };
 
-        // over general function
+        // över
         var overGeneral2 = function (d) {
           d3.select(this).transition().duration(200).style("stroke", "grey");
         };
 
-        // leave general function
+        // bort
         var leaveGeneral2 = function (d) {
           d3.select(this).transition().duration(200).style("stroke", white_col);
         };
 
-        // -------------------------------- on/off Projection Functions
+        // projektionerna on(off)
 
-        // on Projection
-        // down functions
+        // on Projektion
         var onProj = function (d) {
           d3.select(this)
             .transition()
@@ -662,8 +635,7 @@
           d3.selectAll("line.time_lines").style("stroke-width", proj_stroke);
         };
 
-        // off Projection
-        // down functions
+        // off Projektion
         var offProj = function (d) {
           d3.select(this)
             .transition()
@@ -694,7 +666,6 @@
           joinLines1.transition().duration(500).attr("points", array1);
         };
         // region
-        // down functions
         var regionDown = function (d) {
           d3.select(this)
             .transition()
@@ -752,8 +723,7 @@
           d3.select(".invert_text").text("Invert Selected Regions");
         };
 
-        // cause
-        // down functions
+        // orsak
         var causeDown = function (d) {
           d3.select(this)
             .transition()
@@ -814,35 +784,30 @@
             .text("Invert Selected Causes");
         };
 
-        // -------------------------------- Invert Buttons Functions
+        // ändra knapparnas funktion
 
-        // invert region
-        // down functions
-
-        //LOOP
-
+        // ändra region
         var invertRegion = function (d) {
           for (var i = 0; i < 4; i++) {
             regionFilter(i);
           }
         };
-        // invert cause
-        // down functions
+        // ändra orsak
         var invertCause = function (d) {
           for (var i = 0; i < 10; i++) {
           causeFilter(i);
           }
           };
 
-        // -------------------------------------- start button
+        // start knappen
 
-        // add g element button
+        // lägg till g element
         var startButton = svg
           .append("g")
           .classed("start", true)
           .attr("transform", "translate(-4,604.5)");
 
-        // start circle
+        // start cirkel
         startButton
           .append("circle")
           .classed("start_circle", true)
@@ -854,12 +819,11 @@
           .style("fill", white_col)
           .style("fill-opacity", 0);
 
-        // start button
+        // start knapp
         startButton
           .append("polygon")
           .classed("start_polygon", true)
           .attr("points", "0,0 12,6 0,12")
-          //.style("stroke", blue_col)
           .attr("stroke-width", 0.7)
           .style("fill", white_col)
           .style("opacity", 1)
@@ -880,9 +844,8 @@
           .style("font-size", "10px")
           .attr("transform", "translate(0,-40)");
 
-        // -------------------------------------- end circle
+        // slut cirkel
 
-        // end circle
         svg
           .append("circle")
           .classed("end_circle", true)
@@ -892,7 +855,7 @@
           .style("stroke", blue_col)
           .style("fill", white_col);
 
-        // -------------------------------------- separation line
+        // separator
 
         var sepLine = svg
           .append("line")
@@ -905,15 +868,15 @@
           .style("stroke-width", 0.3)
           .style("opacity", 0);
 
-        // -------------------------------------- Controllers & Legend
+        // kontroller och legenden
 
-        // menu
+        // meny
         var controller = svg
           .append("g")
           .classed("controller", true)
           .attr("transform", "translate(980,190)");
 
-        // speed button
+        // speed knapp
         var legendTitle = controller
           .append("g")
           .attr("transform", "translate(17,-70)");
@@ -929,9 +892,7 @@
           .style("opacity", 0.6)
           .attr("transform", "translate(-20,3)");
 
-        // -------------------------------------- speed button
-
-        // speed button
+        // speed knapp
         var speedButton = controller
           .append("g")
           .classed("speed_button", true)
@@ -979,15 +940,15 @@
           .attr("transform", "translate(-20,3)");
 
         // speed circles
-        // low
+        // långsam
         speedButton
           .append("circle")
-          .classed("low_button", true)
-          .attr("cx", 34.5)
           .attr("cy", 0)
           .attr("r", 5)
           .style("stroke", white_col)
           .style("stroke-width", "2px")
+          .classed("low_button", true)
+          .attr("cx", 34.5)
           .style("fill", back_col)
           .style("fill-opacity", 1)
           .style("stroke-opacity", 0.8)
@@ -995,47 +956,45 @@
           .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
-        // medium
+        // medel
         speedButton
           .append("circle")
           .classed("medium_button", true)
+          .style("fill", button_over_col)
+          .style("stroke", moderate_col)
+          .attr("stroke-width", 0.7)
+          .style("stroke-opacity", 1)
+          .on("mousedown", speedDownMedium)
           .attr("cx", 64)
           .attr("cy", 0)
           .attr("r", 5)
           .style("fill", button_over_col)
           .style("fill-opacity", 1)
-          .style("fill", button_over_col)
-          .style("stroke", moderate_col)
-
-          .attr("stroke-width", 0.7)
-          .style("stroke-opacity", 1)
-          .on("mousedown", speedDownMedium)
           .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
-        // high
+        // snabb
         speedButton
           .append("circle")
           .classed("high_button", true)
+          .style("fill-opacity", 1)
+          .on("mousedown", speedDownHigh)
+          .on("mouseover", overGeneral)
           .attr("cx", 94)
           .attr("cy", 0)
           .attr("r", 5)
           .style("stroke", moderate_col)
           .attr("stroke-width", 0.7)
           .style("fill", back_col)
-          .style("fill-opacity", 1)
-          .on("mousedown", speedDownHigh)
-          .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
-        // -------------------------------------- projections ON / OFF Button
-        // projection button
+        // projektionsknapp on/off
         var projectionButton = controller
           .append("g")
           .classed("proj_button", true)
           .attr("transform", "translate(0,-30)");
 
-        // title
+        // rubrik
         projectionButton
           .append("text")
           .classed("proj_text", true)
@@ -1066,42 +1025,40 @@
           .style("font-size", "8px")
           .attr("transform", "translate(-2,0)");
 
-        // switch circles
-        // ON
+        // byt cirklar
+        //on
         projectionButton
           .append("circle")
           .classed("on_proj", true)
-          .attr("cx", 61)
-          .attr("cy", -11)
-          .attr("r", 6)
-          .style("stroke", white_col)
-          .style("stroke-width", "2px")
           .style("stroke-opacity", 0.8)
           .style("fill", back_col)
           .style("fill-opacity", 1)
           .on("mousedown", onProj)
           .on("mouseover", overGeneral)
+          .attr("cx", 61)
+          .attr("cy", -11)
+          .attr("r", 6)
+          .style("stroke", white_col)
+          .style("stroke-width", "2px")
           .on("mouseleave", leaveGeneral);
 
-        // OFF
+        //off
         projectionButton
           .append("circle")
           .classed("off_proj", true)
           .attr("cx", 105)
           .attr("cy", -11)
           .attr("r", 6)
+          .style("stroke-opacity", 0.8)
+          .on("mousedown", offProj)
+          .on("mouseover", overGeneral)
           .style("fill", button_over_col)
           .style("fill-opacity", 1)
           .style("stroke", moderate_col)
           .style("stroke-width", 1)
-          .style("stroke-opacity", 0.8)
-          .on("mousedown", offProj)
-          .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
-        // -------------------------------------- join lines
-
-        // join lines array
+        // para ihop linjerna
         var p1_1 = "51.5,-70 ";
         var p1_2 = "81,-70 ";
         var p1_3 = "111,-70 ";
@@ -1144,9 +1101,9 @@
           .lower()
           .attr("transform", "translate(0,0)");
 
-        // -------------------------------------- Regions Categories Legend
+        // regionernas kategori legend
 
-        // add category legend
+        // lägg till legend
         var regionLegend = controller
           .append("g")
           .attr("class", "region_legend")
@@ -1161,18 +1118,17 @@
           .each(function (d, i) {
             d3.select(this)
               .append("circle")
-              .classed("region_circle" + i, true)
-              .attr("cy", i * 15)
-              .attr("cx", 0)
-              .attr("r", 6)
-              .style("fill", (d) => regionScale(d))
               .style("fill-opacity", 1)
               .style("stroke", white_col)
               .style("stroke-opacity", 0.8)
               .style("stroke-width", 1.5)
               .on("mouseover", overGeneral2)
+              .classed("region_circle" + i, true)
+              .attr("cy", i * 15)
+              .attr("cx", 0)
+              .attr("r", 6)
+              .style("fill", (d) => regionScale(d))
               .on("mouseleave", leaveGeneral2);
-            //.style("stroke-dasharray", "1 1");
 
             d3.select(this)
               .append("text")
@@ -1182,14 +1138,12 @@
               .style("font-size", "8px")
               .style("fill", main_col)
               .style("alignment-baseline", "middle")
-              //.style("text-align", "left")
-              //.style("direction", "rtl")
               .attr("transform", `translate(11, 1)`);
           });
 
-        // -------------------------------------- Causes Categories Legend
+        // orsakernas katergori legend
 
-        // add category legend
+        // lägg till kategori legend
         var causeLegend = controller
           .append("g")
           .attr("class", "cause_legend")
@@ -1205,18 +1159,17 @@
             d3.select(this)
               .append("circle")
               .classed("cause_circle" + i, true)
+              .style("stroke", white_col)
+              .style("stroke-opacity", 0.8)
+              .style("stroke-width", 1.5)
               .attr("cy", i * 15)
               .attr("cx", 0)
               .attr("r", 6)
               .style("fill", (d) => causeScale(d))
               .style("fill-opacity", 1)
               .style("stroke", (d) => causeScale(d))
-              .style("stroke", white_col)
-              .style("stroke-opacity", 0.8)
-              .style("stroke-width", 1.5)
               .on("mouseover", overGeneral2)
               .on("mouseleave", leaveGeneral2);
-            //.style("stroke-dasharray", "1 1");
 
             d3.select(this)
               .append("text")
@@ -1226,20 +1179,18 @@
               .style("font-size", "8px")
               .style("fill", main_col)
               .style("alignment-baseline", "middle")
-              //.style("text-align", "left")
-              //.style("direction", "rtl")
               .attr("transform", `translate(11, 1)`);
           });
 
-        // -------------------------------------- invert Buttons
+        // ändra knappar
 
-        // add invert buttons
+        // lägg till ändringsknappar
         var invert = controller
           .append("g")
           .attr("class", "reset")
           .attr("transform", "translate(10,230)");
 
-        // title
+        // rubrik
         invert
           .append("text")
           .classed("invert_text", true)
@@ -1250,24 +1201,24 @@
           .style("font-size", "8px")
           .attr("transform", "translate(-2,0)");
 
-        // circles
-        // invert region
+        // cirkeln
+        // ändra region
         invert
           .append("circle")
           .classed("invert_region", true)
           .attr("cx", 0)
-          .attr("cy", -11)
-          .attr("r", 7)
-          .style("stroke", moderate_col)
-          .style("stroke-width", "2px")
           .style("stroke-opacity", 0.8)
           .style("fill", back_col)
           .style("fill-opacity", 1)
           .on("mousedown", invertRegion)
           .on("mouseover", overGeneral)
+          .attr("cy", -11)
+          .attr("r", 7)
+          .style("stroke", moderate_col)
+          .style("stroke-width", "2px")
           .on("mouseleave", leaveGeneral);
 
-        // invert cause
+        // ändra orsak
         invert
           .append("circle")
           .classed("invert_cause", true)
@@ -1283,10 +1234,9 @@
           .on("mouseover", overGeneral)
           .on("mouseleave", leaveGeneral);
 
-        // -------------------------------------- Size Legend
+        // storleks legend
 
-        // add size legend
-
+        // lägg till storleks legend
         var sizeLegend = controller
           .append("g")
           .attr("class", "sizelegend")
@@ -1332,29 +1282,29 @@
         sizeLegend
           .append("text")
           .attr("x", 58)
+          .style("font-size", "6.5px")
           .attr("y", 20)
           .text("1000")
-          .style("font-size", "6.5px")
           .style("fill", main_col)
           .style("alignment-baseline", "middle");
 
         sizeLegend
           .append("text")
+          .style("fill", main_col)
           .attr("x", 102)
           .attr("y", 20)
           .text("Hot Area")
           .style("font-size", "6.5px")
-          .style("fill", main_col)
           .style("alignment-baseline", "middle");
 
         sizeLegend
           .append("circle")
-          .attr("cx", 110)
-          .attr("cy", 0)
           .attr("r", areaScale(700))
           .style("fill", "grey")
           .style("fill-opacity", 0)
           .style("stroke", white_col)
+          .attr("cx", 110)
+          .attr("cy", 0)
           .style("stroke-opacity", 1)
           .style("stroke-width", "0.4px");
 
@@ -1376,9 +1326,7 @@
           .style("alignment-baseline", "middle")
           .text("number of dead/missing per incident");
 
-        // -------------------------------------- Intial conditions
-
-        //  catButton.style("opacity", 0);
+        // första möjligheten
 
         regionLegend.style("opacity", 0);
 
@@ -1392,12 +1340,9 @@
 
         invert.style("opacity", 0);
 
-        // -------------------------------------- region filter functions
+        // region filter funktioner
 
-        // region filters
-
-        // ---------- filter 1
-        // LOOP
+        // filter 1
         var checked = Array(4).fill(1);
 
         function regionFilter(index) {
@@ -1430,7 +1375,7 @@
           }
         }
 
-        // cause filters
+        // orsaks filter
 
         var checked = Array(4).fill(1);
 
@@ -1486,12 +1431,15 @@
           });
         }
 
-        // -------------------------------------- dots tooltip
+        // punkters tooltip
 
         var tooltip = div_main
           .append("div")
           .attr("class", "tooltip")
           .style("opacity", 0)
+          .style("background-color", "rgba(1, 12, 22, 0.5)")
+          .style("border-radius", "9px")
+          .style("padding", "4px")
           .style("pointer-events", "none")
           .style("position", "absolute")
           .style("text-align", "center")
@@ -1499,9 +1447,6 @@
           .style("height", "50px")
           .style("font", "9px Tahoma")
           .style("color", tooltip_col)
-          .style("background-color", "rgba(1, 12, 22, 0.5)")
-          .style("border-radius", "9px")
-          .style("padding", "4px")
           .style("line-height", "1")
           .style("display", "inline");
 
@@ -1533,34 +1478,34 @@
           console.log(d3.select(this).style("stroke-opacity"));
         };
 
-        // leave
+        // bort
         var mouseleave = function (d) {
           tooltip.transition().duration(2000).style("opacity", 0);
         };
 
-        // call the tooltip
+        // kalla på tooltip
         d3.selectAll("circle.contour_circles")
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave);
 
-        // -------------------------------------- region tooltip
+        // regionens tooltip
 
         var region_tooltip = div_main
           .append("div")
           .attr("class", "region_tooltip")
           .style("opacity", 0)
+          .style("color", tooltip_col)
+          .style("background-color", "none")
+          .style("border-radius", "9px")
+          .style("padding", "4px")
+          .style("line-height", "2")
+          .style("display", "inline")
           .style("pointer-events", "none")
           .style("position", "absolute")
           .style("text-align", "center")
           .style("width", "120px")
           .style("height", "30px")
           .style("font", "11px Tahoma")
-          .style("color", tooltip_col)
-          .style("background-color", "none")
-          .style("border-radius", "9px")
-          .style("padding", "4px")
-          .style("line-height", "2")
-          .style("display", "inline");
 
         // move
         var region_mousemove = function (d) {
@@ -1572,8 +1517,8 @@
             .style("top", d3.event.pageY - 30 + "px");
 
           d3.select("div.region_tooltip b")
-            .style("font-size", "10px")
             .style("color", tooltip_col)
+            .style("font-size", "10px")
             .style("background-color", "rgba(1, 12, 22, 0.5)")
             .style("padding", "5px");
 
@@ -1583,12 +1528,12 @@
 
           d3.select(this)
             .style("fill", region_over_col)
-            .style("fill-opacity", 0.6)
             .style("stroke-opacity", 1)
+            .style("fill-opacity", 0.6)
             .style("stroke", moderate_col);
         };
 
-        // leave
+        // bort
         var region_mouseleave = function (d) {
           region_tooltip
             .transition()
@@ -1598,16 +1543,16 @@
 
           d3.select(this)
             .style("fill", country_col)
-            .style("fill-opacity", 0.4)
             .style("stroke-opacity", 0.8)
+            .style("fill-opacity", 0.4)
             .style("stroke", border_col);
         };
 
-        // call the tooltip
+        // kalla på tooltip
         d3.selectAll("path.region")
           .on("mousemove", region_mousemove)
           .on("mouseleave", region_mouseleave);
-      } // --------------- end of draw function
+      } 
     </script>
   </body>
 </html>
